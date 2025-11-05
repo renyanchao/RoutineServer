@@ -1,5 +1,6 @@
 #include "RoutineManager.h"
-#include"stdarg.h"
+#include "stdarg.h"
+#include "stdio.h"
 
 void Log(const char* msg, ...)
 {
@@ -8,7 +9,7 @@ void Log(const char* msg, ...)
 	va_list argptr;
 
 	va_start(argptr, msg);
-	vsprintf_s(msgPtr->szLog, msg, argptr);
+	vsnprintf(msgPtr->szLog, sizeof(msgPtr->szLog), msg, argptr);
 	va_end(argptr);
 	g_RoutineManager.SendMsg2RoutineType(RoutineType::LOG, msgPtr);
 }
