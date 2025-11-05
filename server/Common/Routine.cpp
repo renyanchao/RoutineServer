@@ -2,8 +2,7 @@
 #include"ObjType.h"
 #include<iostream>
 #include"ThreadPool.h"
-
-#include"stdarg.h"
+#include "RoutineManager.h"
 
 Routine::Routine()
 {
@@ -75,100 +74,4 @@ void Routine::MsgDefaultHandler(const MessagePtr& rMsgPtr)
 void Routine::RegisterHandlerInit()
 {
 	RegisterHandler(MsgID::Message_Invalid, std::bind(&Routine::MsgDefaultHandler, this, std::placeholders::_1));
-}
-
-void LogRoutine::HandleMsg(const MessagePtr& msgPtr)
-{
-	const Message_log& logMsg = dynamic_cast<const Message_log&>(*msgPtr);
-	std::cout << logMsg.szLog << std::endl;
-}
-
-void Log(const char* msg, ...)
-{
-	auto msgPtr = POOL_NEW(Message_log);
-	
-	va_list argptr;
-
-	va_start(argptr, msg);
-	vsprintf_s(msgPtr->szLog, msg, argptr);
-	va_end(argptr);
-	g_RoutineManager.SendMsg2RoutineType(RoutineType::LOG, msgPtr);
-}
-
-void LoginRoutine::HeartBeat(int32_t nMillisecond)
-{
-	//Log("LoginRoutine Tick() %d", std::this_thread::get_id());
-	
-}
-
-
-
-void MailRoutine::HeartBeat(int32_t nMillisecond)
-{
-	//Log("MailRoutine Tick() %d", std::this_thread::get_id());
-}
-
-void DBRoutine::HeartBeat(int32_t nMillisecond)
-{
-	//Log("DBRoutine Tick() %d", std::this_thread::get_id());
-}
-void RedisRoutine::HeartBeat(int32_t nMillisecond)
-{
-	//Log("RedisRoutine Tick() %d", std::this_thread::get_id());
-}
-
-
-
-void SceneRoutine::HeartBeat(int32_t nMillisecond)
-{
-	if (m_LeftLifeTime <= 0)return;
-
-	Log("RoutineID(%d) SceneRoutine Tick() m_LeftLifeTime(%d) ", GetRoutineID(), m_LeftLifeTime);
-	m_LeftLifeTime = std::max(0, m_LeftLifeTime - nMillisecond);
-	if (m_LeftLifeTime == 0)
-	{
-		//Scene die
-		m_PlayerManager.Clear();
-		m_MonsterManager.Clear();
-		Log("RoutineID(%d) SceneRoutine Die() ", GetRoutineID());;
-		return;
-
-	}
-
-
-	if (std::rand() % 100 <= 50)
-	{
-		//CreateScene
-	}
-	if (std::rand() % 100 <= 80)
-	{
-		CreatePlayer();
-	}
-	if (std::rand() % 100 <= 80)
-	{
-		CreateMonster();
-	}
-
-	m_PlayerManager.HeartBeat();
-	m_MonsterManager.HeartBeat();
-}
-
-void SceneRoutine::CreateMonster()
-{
-	ObjMonsterPtr ptr = POOL_NEW(ObjMonster);
-	m_MonsterManager.AddMonster(ptr);
-
-	Log("RoutineID(%d) SceneRoutine CreateMonster() ", GetRoutineID());;
-}
-
-void SceneRoutine::CreatePlayer()
-{
-	ObjPlayerPtr ptr = POOL_NEW(ObjPlayer);
-	m_PlayerManager.AddPlayer(ptr);
-
-	Log("RoutineID(%d) SceneRoutine CreatePlayer() ", GetRoutineID());;
-}
-void SceneRoutine::CreateScene()
-{
-
 }

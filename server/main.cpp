@@ -1,17 +1,11 @@
-#include"ThreadPool.h"
-#include "GameDefine.h"
-#include"Routine.h"
 
 
-extern void TaskFunc(Thread& t)
-{
-	while (true)
-	{
-		t.Tick();
-	}
-}
-ThreadPool g_threadPool;
-RoutineManager g_RoutineManager;
+#include "RoutineManager.h"
+#include "ThreadPool.h"
+
+
+#include "Log/LogRoutine.h"
+#include "Scene/SceneRoutine.h"
 
 int main()
 {

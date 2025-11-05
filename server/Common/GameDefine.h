@@ -30,3 +30,5 @@ enum class MsgID
 	Message_log,
 	Message_createscene,
 };
+
+void Log(const char* msg, ...);
