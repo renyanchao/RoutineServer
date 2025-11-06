@@ -21,4 +21,5 @@ private:
 	std::mutex m_lock;
 	std::thread t;
 	std::vector<std::shared_ptr<Routine>> m_TaskList;
+	std::vector<std::shared_ptr<Routine>> m_AddTaskList;
 };

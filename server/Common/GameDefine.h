@@ -59,8 +59,30 @@ uint64_t GetCurrencyTime();
 
 
 #include <thread>
-#include <shared_mutex>
+#include <mutex>
 
-#define lock_read(MUTEX) std::shared_lock<std::shared_mutex> __Lock__(MUTEX)
-#define lock_write(MUTEX) std::lock_guard<std::shared_mutex> __Lock__(MUTEX)
+#define lock_read(MUTEX) std::lock_guard<std::mutex> __Lock__(MUTEX)
+#define lock_write(MUTEX) std::lock_guard<std::mutex> __Lock__(MUTEX)
 #define sleep_ms(MS) std::this_thread::sleep_for(std::chrono::milliseconds(MS));
+
+
+
+
+
+
+
+
+
+
+#if defined(_WIN32)
+	#define __ENTER_FUNCTION {try{
+	#define __LEAVE_FUNCTION }catch(...){AssertEx(false,__FUNCTION__);}}
+	#define AssertEx(expr,msg) ((VOID)((expr)?0:(__assertex__(__FILE__,__LINE__,__FUNCTION__,#expr,msg),0)))
+#else	//linux
+	#define __ENTER_FUNCTION {try{
+	#define __LEAVE_FUNCTION }catch(...){AssertEx(false,__PRETTY_FUNCTION__);}}
+	#define AssertEx(expr,msg) {if(!(expr)){__assertex__(__FILE__,__LINE__,__PRETTY_FUNCTION__,#expr,msg);}}
+#endif 
+
+void __assertex__(const CHAR* file, UINT line, const CHAR* func, const CHAR* expr, const CHAR* msg);
+

@@ -11,7 +11,7 @@ void Thread::Start()
 void Thread::AddTask(std::shared_ptr<Routine> r)
 {
 	std::lock_guard<std::mutex> lock(m_lock);
-	m_TaskList.push_back(r);
+	m_AddTaskList.push_back(r);
 }
 void Thread::DelTask(RoutineID nID)
 {
@@ -27,8 +27,13 @@ void Thread::DelTask(RoutineID nID)
 }
 void Thread::Tick()
 {
+	{
+		std::lock_guard<std::mutex> lock(m_lock);
+		m_TaskList.insert(m_TaskList.end(), std::make_move_iterator(m_AddTaskList.begin()), std::make_move_iterator(m_AddTaskList.end()));
+		m_AddTaskList.clear();
 
-	std::lock_guard<std::mutex> lock(m_lock);
+	}
+	
 
 	TimeElpaseInfo elpasetimeInfo;
 	elpasetimeInfo.m_nCurrencyTime = GetCurrencyTime();
@@ -39,7 +44,13 @@ void Thread::Tick()
 	std::list<std::shared_ptr<Routine>> dielist;
 	for (auto& r : m_TaskList)
 	{
-		r->Tick(elpasetimeInfo);
+		try
+		{
+			r->Tick(elpasetimeInfo);
+		}
+		catch (...)
+		{
+		}
 		if (r->GetLeftTime() <= 0)
 		{
 			dielist.push_back(r);

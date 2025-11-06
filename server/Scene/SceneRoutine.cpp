@@ -3,6 +3,7 @@
 
 void SceneRoutine::HeartBeat(const TimeElpaseInfo& info)
 {
+	__ENTER_FUNCTION
 	if (m_LeftLifeTime <= 0)return;
 
 	Log("RoutineID(%d) SceneRoutine Tick() m_LeftLifeTime(%d), nCurrencyTime(%d) ", GetRoutineID(), m_LeftLifeTime, info.m_nCurrencyTime);
@@ -18,7 +19,7 @@ void SceneRoutine::HeartBeat(const TimeElpaseInfo& info)
 	}
 
 
-	if (std::rand() % 100 <= 50)
+	if (std::rand() % 100 <= 1)
 	{
 		CreateScene();
 	}
@@ -33,6 +34,7 @@ void SceneRoutine::HeartBeat(const TimeElpaseInfo& info)
 
 	m_PlayerManager.HeartBeat();
 	m_MonsterManager.HeartBeat();
+	__LEAVE_FUNCTION
 }
 
 void SceneRoutine::CreateMonster()
@@ -52,7 +54,10 @@ void SceneRoutine::CreatePlayer()
 }
 void SceneRoutine::CreateScene()
 {
-	Log("RoutineID(%d) SceneRoutine CreatePlayer() Try Begin", GetRoutineID());
+	__ENTER_FUNCTION
+	Log("RoutineID(%d) SceneRoutine CreateScene() Try Begin", GetRoutineID());
 	g_RoutineManager.RegisterRoutine(std::make_shared<SceneRoutine>());
-	Log("RoutineID(%d) SceneRoutine CreatePlayer() Try Finish", GetRoutineID());
+	Log("RoutineID(%d) SceneRoutine CreateScene() Try Finish", GetRoutineID());
+	AssertEx(false, "CreateScene fail");
+	__LEAVE_FUNCTION
 }

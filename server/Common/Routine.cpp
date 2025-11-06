@@ -15,9 +15,11 @@ Routine:: ~Routine()
 
 void Routine::Tick(const TimeElpaseInfo& info)
 {
+	__ENTER_FUNCTION
 	m_elapsetime += info.m_nElpaseTime;
 	if (m_elapsetime < TickInteral())return;
-	for (int i = 0; i < 128; i++)
+	/*for (int i = 0; i < 128; i++)*/
+	while(true)
 	{
 		auto msgPtr = Pop();
 		if (msgPtr == nullptr)break;
@@ -30,12 +32,13 @@ void Routine::Tick(const TimeElpaseInfo& info)
 	}
 	HeartBeat(info);
 	m_elapsetime = 0;
+	__LEAVE_FUNCTION
 }
 
 //Local Other Routine Push to me
 void Routine::Push(MessagePtr ptr)
 {
-	std::lock_guard<std::mutex> pushlock(m_PushLock);
+	std::lock_guard<std::mutex> pushlock(m_Lock);
 	m_PushList.push_back(ptr);
 }
 //Self Pop
@@ -47,11 +50,10 @@ MessagePtr Routine::Pop()
 		m_PopList.pop_front();
 		return p;
 	}
-
-	std::lock_guard<std::mutex> pushlock(m_PushLock);
-	std::lock_guard<std::mutex> poplock(m_PopLock);
-
-	m_PopList.swap(m_PushList);
+	{
+		std::lock_guard<std::mutex> pushlock(m_Lock);
+		m_PopList.swap(m_PushList);
+	}
 	if (m_PopList.empty() == false)
 	{
 		auto p = m_PopList.front();

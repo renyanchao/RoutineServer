@@ -1,4 +1,4 @@
-#include "RoutineManager.h"
+﻿#include "RoutineManager.h"
 #include "stdarg.h"
 #include "stdio.h"
 void Log(const char* msg, ...)
@@ -27,4 +27,34 @@ uint64_t GetCurrencyTime()
 	t2 = (double)_tend.tv_sec * 1000 + (double)_tend.tv_usec / 1000;
 	return uint64_t(t2 - t1);
 #endif
+}
+
+
+
+
+VOID __show__(const CHAR* szTemp)
+{
+
+}
+void __assertex__(const CHAR* file, UINT line, const CHAR* func, const CHAR* expr, const CHAR* msg)
+{
+	CHAR szTemp[1024] = { 0 };
+
+#ifdef __LINUX__
+	sprintf(szTemp, "[%s][%d][%s][%s]\n[%s]\n", file, line, func, expr, msg);
+#else
+	sprintf(szTemp, "[%s][%d][%s][%s]\n[%s]", file, line, func, expr, msg);
+#endif
+	//__show__(szTemp);
+
+	FILE* f = fopen("./Log/assert.log", "a");
+	if (f)
+	{
+		fwrite(szTemp, 1, strlen(szTemp), f);
+		fwrite("\r\n", 1, 2, f);
+		fclose(f);
+	}
+	Log(szTemp);
+
+	throw(1);
 }

@@ -2,7 +2,7 @@
 
 
 #include <list>
-#include <shared_mutex>
+#include <mutex>
 #include "GameDefine.h"
 #include "ObjType.h"
 
@@ -14,14 +14,14 @@ public:
 
 	bool SendMsg2Routine(RoutineID nID, const MessagePtr& message);
 	bool SendMsg2RoutineType(RoutineType nType, const MessagePtr& message);
-	void RegisterRoutine(std::shared_ptr<Routine> r, bool startserver = false);
+	void RegisterRoutine(std::shared_ptr<Routine> r);
 	//void UnRegisterRoutine(std::shared_ptr<Routine> r);
 
 private:
 
 	std::list<std::shared_ptr<Routine>> m_AllRoutine;
 	uint64_t m_GenerateRoutineID;
-	std::shared_mutex m_Lock;
+	std::mutex m_Lock;
 
 };
 extern RoutineManager g_RoutineManager;

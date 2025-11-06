@@ -51,10 +51,8 @@ public:
 	void	 SetRoutineID(uint64_t routineID) { m_routineUID = routineID; }
 private:
 
-	std::mutex m_PushLock;
 	std::list<MessagePtr> m_PushList;
-
-	std::mutex m_PopLock;
+	std::mutex m_Lock;
 	std::list<MessagePtr> m_PopList;
 
 	uint64_t m_elapsetime = 0;

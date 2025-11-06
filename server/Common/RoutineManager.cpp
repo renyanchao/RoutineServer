@@ -28,9 +28,9 @@ bool RoutineManager::SendMsg2RoutineType(RoutineType nType, const MessagePtr& me
 	}
 	return false;
 }
-void RoutineManager::RegisterRoutine(std::shared_ptr<Routine> r, bool startserver)
+void RoutineManager::RegisterRoutine(std::shared_ptr<Routine> r)
 {
-	Log("SceneRoutine RegisterRoutine() try lock");
+	//Log("SceneRoutine RegisterRoutine() try lock");
 	{
 		lock_write(m_Lock);
 		//if(startserver == false)sleep_ms(10 * 1000);
@@ -39,7 +39,7 @@ void RoutineManager::RegisterRoutine(std::shared_ptr<Routine> r, bool startserve
 	}
 	g_threadPool.AddTask(r);
 	
-	Log("SceneRoutine RegisterRoutine() try unlock");
+	//Log("SceneRoutine RegisterRoutine() try unlock");
 }
 //void RoutineManager::UnRegisterRoutine(std::shared_ptr<Routine> r)
 //{
