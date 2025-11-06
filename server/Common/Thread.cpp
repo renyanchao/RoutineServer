@@ -30,14 +30,16 @@ void Thread::Tick()
 
 	std::lock_guard<std::mutex> lock(m_lock);
 
-	//auto nowTime = std::chrono::system_clock::now();
-	//auto elpasetime = std::chrono::duration_cast<std::chrono::milliseconds>(nowTime - m_threadTimer).count();
-	auto elpasetime = 10;
-	//m_threadTimer = nowTime;
+	TimeElpaseInfo elpasetimeInfo;
+	elpasetimeInfo.m_nCurrencyTime = GetCurrencyTime();
+	elpasetimeInfo.m_nElpaseTime = elpasetimeInfo.m_nCurrencyTime - m_nCurrencyTime;
+
+	m_nCurrencyTime = elpasetimeInfo.m_nCurrencyTime;
+
 	std::list<std::shared_ptr<Routine>> dielist;
 	for (auto& r : m_TaskList)
 	{
-		r->Tick(elpasetime);
+		r->Tick(elpasetimeInfo);
 		if (r->GetLeftTime() <= 0)
 		{
 			dielist.push_back(r);
@@ -54,6 +56,6 @@ void Thread::Tick()
 			}
 		}
 	}
-	if(THREAD_SLEEP_TIME_MS > 0)
-	std::this_thread::sleep_for(std::chrono::milliseconds(THREAD_SLEEP_TIME_MS));
+	if (THREAD_SLEEP_TIME_MS > 0)
+		sleep_ms(THREAD_SLEEP_TIME_MS);
 }

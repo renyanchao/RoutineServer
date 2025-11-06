@@ -22,11 +22,11 @@ public:
 	{
 		return INVALID_ID;
 	}
-	virtual void HeartBeat(int32_t nMillisecond)
+	virtual void HeartBeat(const TimeElpaseInfo& info)
 	{
 
 	}
-	virtual void Tick(int32_t nMillisecond);
+	virtual void Tick(const TimeElpaseInfo& info);
 	virtual uint32_t GetLeftTime()const { return 0xFFFFFFFF; }
 	//Local Other Routine Push to me
 	void Push(MessagePtr ptr);

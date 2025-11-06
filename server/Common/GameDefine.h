@@ -9,6 +9,21 @@
 #define RoutineID unsigned long long
 #define RoldID unsigned long long
 
+
+#if defined(_WIN32)
+#include <Windows.h>
+#include "crtdbg.h"
+#elif defined(__LINUX__)
+	#include <sys/types.h>
+	#include <pthread.h>
+	#include <execinfo.h>
+	#include <signal.h>
+	#include <exception>
+	#include <setjmp.h>
+	#include <sys/epoll.h>
+#include <sys/utsname.h>
+#include <sys/time.h>
+#endif
 enum RoutineType
 {
 	LOG = 0,
@@ -33,3 +48,19 @@ enum MsgID
 };
 
 void Log(const char* msg, ...);
+
+
+struct TimeElpaseInfo
+{
+	uint64_t m_nCurrencyTime = 0;
+	uint32_t m_nElpaseTime = 0;
+};
+uint64_t GetCurrencyTime();
+
+
+#include <thread>
+#include <shared_mutex>
+
+#define lock_read(MUTEX) std::shared_lock<std::shared_mutex> __Lock__(MUTEX)
+#define lock_write(MUTEX) std::lock_guard<std::shared_mutex> __Lock__(MUTEX)
+#define sleep_ms(MS) std::this_thread::sleep_for(std::chrono::milliseconds(MS));

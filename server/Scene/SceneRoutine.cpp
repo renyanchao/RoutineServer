@@ -1,13 +1,13 @@
 #include "SceneRoutine.h"
+#include "RoutineManager.h"
 
-
-void SceneRoutine::HeartBeat(int32_t nMillisecond)
+void SceneRoutine::HeartBeat(const TimeElpaseInfo& info)
 {
 	if (m_LeftLifeTime <= 0)return;
 
-	Log("RoutineID(%d) SceneRoutine Tick() m_LeftLifeTime(%d) ", GetRoutineID(), m_LeftLifeTime);
-	m_LeftLifeTime = std::max(0, m_LeftLifeTime - nMillisecond);
-	if (m_LeftLifeTime == 0)
+	Log("RoutineID(%d) SceneRoutine Tick() m_LeftLifeTime(%d), nCurrencyTime(%d) ", GetRoutineID(), m_LeftLifeTime, info.m_nCurrencyTime);
+	m_LeftLifeTime =  m_LeftLifeTime - info.m_nElpaseTime;
+	if (m_LeftLifeTime <= 0)
 	{
 		//Scene die
 		m_PlayerManager.Clear();
@@ -20,13 +20,13 @@ void SceneRoutine::HeartBeat(int32_t nMillisecond)
 
 	if (std::rand() % 100 <= 50)
 	{
-		//CreateScene
+		CreateScene();
 	}
-	if (std::rand() % 100 <= 80)
+	if (std::rand() % 100 <= 100)
 	{
 		CreatePlayer();
 	}
-	if (std::rand() % 100 <= 80)
+	if (std::rand() % 100 <= 100)
 	{
 		CreateMonster();
 	}
@@ -52,5 +52,7 @@ void SceneRoutine::CreatePlayer()
 }
 void SceneRoutine::CreateScene()
 {
-
+	Log("RoutineID(%d) SceneRoutine CreatePlayer() Try Begin", GetRoutineID());
+	g_RoutineManager.RegisterRoutine(std::make_shared<SceneRoutine>());
+	Log("RoutineID(%d) SceneRoutine CreatePlayer() Try Finish", GetRoutineID());
 }

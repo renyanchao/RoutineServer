@@ -13,11 +13,10 @@ Routine:: ~Routine()
 
 
 
-void Routine::Tick(int32_t nMillisecond)
+void Routine::Tick(const TimeElpaseInfo& info)
 {
-	m_elapsetime += nMillisecond;
+	m_elapsetime += info.m_nElpaseTime;
 	if (m_elapsetime < TickInteral())return;
-	m_elapsetime = 0;
 	for (int i = 0; i < 128; i++)
 	{
 		auto msgPtr = Pop();
@@ -29,7 +28,8 @@ void Routine::Tick(int32_t nMillisecond)
 		}
 		
 	}
-	HeartBeat(nMillisecond);
+	HeartBeat(info);
+	m_elapsetime = 0;
 }
 
 //Local Other Routine Push to me

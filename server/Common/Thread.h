@@ -16,7 +16,8 @@ public:
 	void Tick();
 	void DelTask(RoutineID nID);
 private:
-	std::chrono::time_point<std::chrono::system_clock> m_threadTimer = std::chrono::system_clock::now();
+	//std::chrono::time_point<std::chrono::system_clock> m_threadTimer = std::chrono::system_clock::now();
+	int64_t m_nCurrencyTime = GetCurrencyTime();
 	std::mutex m_lock;
 	std::thread t;
 	std::vector<std::shared_ptr<Routine>> m_TaskList;
