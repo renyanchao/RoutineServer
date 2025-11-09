@@ -68,7 +68,6 @@ std::string getCurrentTimestamp() {
 }
 
 
-
 #include <fstream>
 #include <string>
 void __show__(const char* szTemp)
