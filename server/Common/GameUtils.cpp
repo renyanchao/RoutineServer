@@ -1,6 +1,8 @@
 ﻿#include "RoutineManager.h"
 #include "stdarg.h"
-#include "stdio.h"
+#include <stdio.h>
+
+
 void Log(const char* msg, ...)
 {
 	auto msgPtr = POOL_NEW(Message_log);
@@ -30,30 +32,54 @@ uint64_t GetCurrencyTime()
 }
 
 
+#include <chrono>
+#include <iomanip>
+#include <sstream>
+std::string getCurrentTimestamp() {
+	// 获取当前系统时间（精确到毫秒）
+	auto now = std::chrono::system_clock::now();
+	auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+		now.time_since_epoch()) % 1000;
+	auto timer = std::chrono::system_clock::to_time_t(now);
+
+	// 转换为本地时间
+	std::tm bt = *std::localtime(&timer);
+
+	// 格式化为字符串
+	std::ostringstream oss;
+	oss << std::put_time(&bt, "%Y-%m-%d-%H-%M-%S");
+	oss << "-" << std::setfill('0') << std::setw(3) << ms.count();
+
+	return oss.str();
+}
 
 
-VOID __show__(const CHAR* szTemp)
+
+#include <fstream>
+#include <string>
+void __show__(const char* szTemp)
 {
 
 }
-void __assertex__(const CHAR* file, UINT line, const CHAR* func, const CHAR* expr, const CHAR* msg)
+void __assertex__(const char* filename, int line, const char* func, const char* expr, const char* msg)
 {
-	CHAR szTemp[1024] = { 0 };
+	char szTemp[1024] = { 0 };
 
 #ifdef __LINUX__
-	sprintf(szTemp, "[%s][%d][%s][%s]\n[%s]\n", file, line, func, expr, msg);
+	sprintf(szTemp, "[T=%s][%s][%d][%s][%s]\n[%s]\n", getCurrentTimestamp().c_str(), filename, line, func, expr, msg);
 #else
-	sprintf(szTemp, "[%s][%d][%s][%s]\n[%s]", file, line, func, expr, msg);
+	sprintf(szTemp, "[T=%s][%s][%d][%s][%s]\n[%s]", getCurrentTimestamp().c_str(), filename, line, func, expr, msg);
 #endif
 	//__show__(szTemp);
+	static std::ofstream file(std::string("../../log/assert.log"), std::ios::app | std::ios::binary);
 
-	FILE* f = fopen("./Log/assert.log", "a");
-	if (f)
-	{
-		fwrite(szTemp, 1, strlen(szTemp), f);
-		fwrite("\r\n", 1, 2, f);
-		fclose(f);
+	if (!file.is_open()) {
+		return;
 	}
+
+	file << szTemp;
+	//file.close();
+
 	Log(szTemp);
 
 	throw(1);
